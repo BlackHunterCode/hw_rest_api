@@ -4,11 +4,11 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import br.com.blackhunter.hunter_wallet.rest_api.useraccount.entity.UserAccountEntity;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -25,10 +25,10 @@ public class NotificationActionEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID notificationActionId;
     @OneToOne
-    @Column(name = "notificationId")
+    @JoinColumn(name = "notificationId")
     private NotificationEntity notificationId;
     @OneToOne
-    @Column(name = "accountId")
+    @JoinColumn(name = "accountId")
     private UserAccountEntity accountId;
     /**
      * FK genérica.
