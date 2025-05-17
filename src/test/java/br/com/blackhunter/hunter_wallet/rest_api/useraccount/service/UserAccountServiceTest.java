@@ -8,6 +8,7 @@ package br.com.blackhunter.hunter_wallet.rest_api.useraccount.service;
 
 import br.com.blackhunter.hunter_wallet.rest_api.useraccount.dto.UserAccountData;
 import br.com.blackhunter.hunter_wallet.rest_api.useraccount.entity.UserAccountEntity;
+import br.com.blackhunter.hunter_wallet.rest_api.useraccount.enums.UserAccountStatus;
 import br.com.blackhunter.hunter_wallet.rest_api.useraccount.exception.UserAccountCreationException;
 import br.com.blackhunter.hunter_wallet.rest_api.useraccount.mapper.UserAccountMapper;
 import br.com.blackhunter.hunter_wallet.rest_api.useraccount.payload.UserAccountPayload;
@@ -23,6 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -72,9 +74,8 @@ public class UserAccountServiceTest {
         userAccountEntity.setAccountId(accountId);
         userAccountEntity.setAccountName("Usuário Teste");
         userAccountEntity.setEmail("usuario.teste@example.com");
-        userAccountEntity.setHashedPassword("senhaHasheada123");
+        userAccountEntity.setPasswordHash("senhaHasheada123");
         userAccountEntity.setAccountUsername("usuario.teste");
-        userAccountEntity.setAccountIsActive(true);
         userAccountEntity.setCreatedAt(LocalDateTime.now());
 
         // Configurando o DTO para os testes
@@ -151,7 +152,7 @@ public class UserAccountServiceTest {
         when(repository.saveAndFlush(any(UserAccountEntity.class))).thenAnswer(invocation -> {
             UserAccountEntity savedEntity = invocation.getArgument(0);
             // Verificando se os campos foram configurados corretamente
-            assertTrue(savedEntity.isAccountIsActive());
+            assertEquals(UserAccountStatus.ACTIVE,savedEntity.getAccountStatus() );
             assertNotNull(savedEntity.getCreatedAt());
             return savedEntity;
         });
@@ -160,8 +161,8 @@ public class UserAccountServiceTest {
         userAccountService.createUserAccount(userAccountPayload);
 
         // Verificações adicionais
-        verify(repository, times(1)).saveAndFlush(argThat(entity -> 
-            entity.isAccountIsActive() && entity.getCreatedAt() != null
+        verify(repository, times(1)).saveAndFlush(argThat(entity ->
+            Objects.equals(entity.getAccountStatus(), UserAccountStatus.ACTIVE) && entity.getCreatedAt() != null
         ));
     }
     
@@ -251,12 +252,12 @@ public class UserAccountServiceTest {
         when(mapper.toEntity(any(UserAccountPayload.class))).thenReturn(userAccountEntity);
         
         // Definindo a conta como inativa para testar se o serviço a torna ativa
-        userAccountEntity.setAccountIsActive(false);
+        userAccountEntity.setAccountStatus(null);
         
         when(repository.saveAndFlush(any(UserAccountEntity.class))).thenAnswer(invocation -> {
             UserAccountEntity savedEntity = invocation.getArgument(0);
             // Verificando se a conta foi definida como ativa
-            assertTrue(savedEntity.isAccountIsActive());
+            assertEquals(UserAccountStatus.ACTIVE, savedEntity.getAccountStatus());
             return savedEntity;
         });
 

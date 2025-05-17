@@ -8,6 +8,7 @@ package br.com.blackhunter.hunter_wallet.rest_api.useraccount.mapper;
 
 import br.com.blackhunter.hunter_wallet.rest_api.useraccount.dto.UserAccountData;
 import br.com.blackhunter.hunter_wallet.rest_api.useraccount.entity.UserAccountEntity;
+import br.com.blackhunter.hunter_wallet.rest_api.useraccount.enums.UserAccountStatus;
 import br.com.blackhunter.hunter_wallet.rest_api.useraccount.payload.UserAccountPayload;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -52,9 +53,9 @@ public class UserAccountMapperTest {
         userAccountEntity.setAccountId(accountId);
         userAccountEntity.setAccountName("Usuário Teste");
         userAccountEntity.setEmail("usuario.teste@example.com");
-        userAccountEntity.setHashedPassword("senhaHasheada123");
+        userAccountEntity.setPasswordHash("senhaHasheada123");
         userAccountEntity.setAccountUsername("usuario.teste");
-        userAccountEntity.setAccountIsActive(true);
+        userAccountEntity.setAccountStatus(UserAccountStatus.ACTIVE);
         userAccountEntity.setCreatedAt(createdAt);
     }
 
@@ -72,7 +73,7 @@ public class UserAccountMapperTest {
         assertNotNull(result);
         assertEquals(userAccountPayload.getFullName(), result.getAccountName());
         assertEquals(userAccountPayload.getEmail(), result.getEmail());
-        assertEquals(userAccountPayload.getHashedPassword(), result.getHashedPassword());
+        assertEquals(userAccountPayload.getHashedPassword(), result.getPasswordHash());
         // Nota: A entidade não possui o campo subscriptionType, ele é definido como constante no mapper
     }
 
@@ -111,7 +112,7 @@ public class UserAccountMapperTest {
         assertNotNull(result);
         assertEquals(null, result.getAccountName());
         assertEquals(null, result.getEmail());
-        assertEquals(null, result.getHashedPassword());
+        assertEquals(null, result.getPasswordHash());
         // Nota: A entidade não possui o campo subscriptionType, ele é definido como constante no mapper
     }
 

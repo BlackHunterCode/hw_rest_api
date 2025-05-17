@@ -27,7 +27,7 @@ public class UserAccountMapperImpl implements UserAccountMapper {
         UserAccountEntity entity = new UserAccountEntity();
         entity.setAccountName(reqPayload.getFullName());
         entity.setEmail(reqPayload.getEmail());
-        entity.setHashedPassword(reqPayload.getHashedPassword());
+        entity.setPasswordHash(reqPayload.getHashedPassword());
         
         return entity;
     }
