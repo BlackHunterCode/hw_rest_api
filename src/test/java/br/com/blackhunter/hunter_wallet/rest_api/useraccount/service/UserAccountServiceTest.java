@@ -12,6 +12,7 @@ import br.com.blackhunter.hunter_wallet.rest_api.useraccount.exception.UserAccou
 import br.com.blackhunter.hunter_wallet.rest_api.useraccount.mapper.UserAccountMapper;
 import br.com.blackhunter.hunter_wallet.rest_api.useraccount.payload.UserAccountPayload;
 import br.com.blackhunter.hunter_wallet.rest_api.useraccount.repository.UserAccountRepository;
+import br.com.blackhunter.hunter_wallet.rest_api.useraccount.service.impl.UserAccountService;
 import br.com.blackhunter.hunter_wallet.rest_api.useraccount.validation.UserAccountValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

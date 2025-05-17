@@ -24,7 +24,7 @@ public interface UserAccountMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "name", source = "fullName")
     @Mapping(target = "email", source = "email")
-    @Mapping(target = "password", source = "hashedPassword")
+    @Mapping(target = "password", source = "passwordHash")
     @Mapping(target = "subscriptionType", constant = "FREE") // Valor fixo AINDA
     UserAccountEntity toEntity(UserAccountPayload reqPayload);
 

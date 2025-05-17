@@ -6,12 +6,8 @@
 
 package br.com.blackhunter.hunter_wallet.rest_api.useraccount.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import br.com.blackhunter.hunter_wallet.rest_api.useraccount.enums.UserAccountStatus;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -31,10 +27,13 @@ public class UserAccountEntity {
     private String accountName;
     @Column(unique = true)
     private String email;
-    private String hashedPassword;
+    private String passwordHash;
     private String accountUsername;
-    private boolean accountIsActive;
+    @Enumerated(EnumType.STRING)
+    private UserAccountStatus accountStatus;
+    private boolean emailVerified;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     /**
      * Construtor padrão da classe.
