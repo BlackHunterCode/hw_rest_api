@@ -27,7 +27,8 @@ public class UserAccountValidator {
     }
 
     /**
-     * Verifica se o e-mail já está cadastrado no sistema
+     * <p>Verifica se o e-mail já está cadastrado no sistema</p>
+     * <p>A exception lançada por esse método será tratada pelo handler global.</p>
      * @param email E-mail a ser verificado
      * @throws UserAccountCreationException Caso o e-mail já esteja cadastrado
      */

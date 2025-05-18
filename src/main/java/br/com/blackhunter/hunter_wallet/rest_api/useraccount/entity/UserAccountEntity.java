@@ -14,8 +14,9 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
- * Entidade de conta de usuário.
- * Essa é a entidade base do sistema.
+ * <p>Classe <code>UserAccountEntity</code>.</p>
+ * <p>Entidade de conta de usuário.</p>
+ * <p>Essa é a entidade base do sistema.</p>
  * */
 @Entity
 @Table(name = "hw_useraccounts")
@@ -24,16 +25,25 @@ public class UserAccountEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID accountId;
+
     private String accountName;
+
     @Column(unique = true)
     private String email;
+
     private String passwordHash;
+
     private String accountUsername;
+
     @Enumerated(EnumType.STRING)
     private UserAccountStatus accountStatus;
+
     private boolean emailVerified;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    @OneToOne(mappedBy = "userAccount", cascade = CascadeType.ALL)
+    private UserProfileEntity userProfile;
 
     /**
      * Construtor padrão da classe.

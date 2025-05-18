@@ -11,5 +11,4 @@
  * 
  * @since 1.0.0
  */
-
 package br.com.blackhunter.hunter_wallet.rest_api.useraccount;
