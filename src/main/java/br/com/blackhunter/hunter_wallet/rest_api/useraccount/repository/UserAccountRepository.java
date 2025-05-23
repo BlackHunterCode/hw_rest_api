@@ -14,6 +14,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -32,4 +33,6 @@ public interface UserAccountRepository extends JpaRepository<UserAccountEntity, 
      * */
     @Query("SELECT COUNT(*) > 0 FROM UserAccountEntity u WHERE u.email = :email")
     boolean existsByEmail(@Param(value = "email") String email);
+
+    Optional<UserAccountEntity> findByEmail(String email);
 }
