@@ -1,5 +1,6 @@
 package br.com.blackhunter.hunter_wallet.rest_api.useraccount.service.impl;
 
+import br.com.blackhunter.hunter_wallet.rest_api.core.exception.BusinessException;
 import br.com.blackhunter.hunter_wallet.rest_api.core.util.MultipartFileUtil;
 import br.com.blackhunter.hunter_wallet.rest_api.useraccount.dto.UserProfileData;
 import br.com.blackhunter.hunter_wallet.rest_api.useraccount.entity.UserAccountEntity;
@@ -28,6 +29,14 @@ public class UserProfileServiceImpl implements UserProfileService {
     @Override
     @NonNull
     public UserProfileData createProfile(@NonNull UserAccountEntity userAccount, @NonNull UserProfilePayload payload) {
+        // Explicit null checks to throw BusinessException
+        if (userAccount == null) {
+            throw new BusinessException("UserAccountEntity cannot be null");
+        }
+        if (payload == null) {
+            throw new BusinessException("UserProfilePayload cannot be null");
+        }
+        
         UserProfileEntity toSave = mapper.toEntity(payload);
         if(payload.getProfilePictureFile() != null) {
             toSave.setProfilePictureFile(MultipartFileUtil.validateAndGetMultipartFileBytes(

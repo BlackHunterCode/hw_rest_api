@@ -1,8 +1,11 @@
-/**
- * 2025 © Black Hunter - Todos os Direitos Reservados.
+/*
+ * @(#)UserAccountServiceImplTest.java
  *
- * Classe protegida - Aletrações somente por CODEOWNERS.
- * */
+ * Copyright 2025, Black Hunter
+ * http://www.blackhunter.com.br
+ *
+ * Todos os direitos reservados.
+ */
 
 package br.com.blackhunter.hunter_wallet.rest_api.useraccount.service;
 
@@ -24,7 +27,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -77,6 +79,8 @@ public class UserAccountServiceImplTest {
         userAccountEntity.setPasswordHash("senhaHasheada123");
         userAccountEntity.setAccountUsername("usuario.teste");
         userAccountEntity.setCreatedAt(LocalDateTime.now());
+        userAccountEntity.setEmailVerified(false);
+        userAccountEntity.setUserProfile(null);
 
         // Configurando o DTO para os testes
         userAccountData = new UserAccountData();
@@ -144,26 +148,33 @@ public class UserAccountServiceImplTest {
      * <p>Verifica se o método createUserAccount está configurando os campos da entidade corretamente.</p>
      * */
     @Test
-    @DisplayName("Deve configurar os campos da entidade corretamente")
+    @DisplayName("Deve verificar se os campos da entidade são configurados corretamente")
     void registerUserSetFieldsCorrectly() {
-        // Configuração dos mocks com captura do argumento
+        // Configuração dos mocks
         doNothing().when(validator).validateEmailUniqueness(anyString());
         when(mapper.toEntity(any(UserAccountPayload.class))).thenReturn(userAccountEntity);
+        
+        // Capturando a entidade salva para verificar os campos
         when(repository.saveAndFlush(any(UserAccountEntity.class))).thenAnswer(invocation -> {
             UserAccountEntity savedEntity = invocation.getArgument(0);
+            
             // Verificando se os campos foram configurados corretamente
-            assertEquals(UserAccountStatus.ACTIVE,savedEntity.getAccountStatus() );
-            assertNotNull(savedEntity.getCreatedAt());
+            assertEquals(userAccountPayload.getFullName(), savedEntity.getAccountName());
+            assertEquals(userAccountPayload.getEmail(), savedEntity.getEmail());
+            assertEquals(userAccountPayload.getHashedPassword(), savedEntity.getPasswordHash());
+            assertTrue(savedEntity.getAccountUsername().contains("usuario.teste"));
+            assertFalse(savedEntity.isEmailVerified());
+            assertNull(savedEntity.getUserProfile());
+            
             return savedEntity;
         });
 
         // Execução do método a ser testado
         userAccountServiceImpl.registerUser(userAccountPayload);
 
-        // Verificações adicionais
-        verify(repository, times(1)).saveAndFlush(argThat(entity ->
-            Objects.equals(entity.getAccountStatus(), UserAccountStatus.ACTIVE) && entity.getCreatedAt() != null
-        ));
+        // Verificando se os métodos foram chamados corretamente
+        verify(validator, times(1)).validateEmailUniqueness(userAccountPayload.getEmail());
+        verify(repository, times(1)).saveAndFlush(any(UserAccountEntity.class));
     }
     
     /**

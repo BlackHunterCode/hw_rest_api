@@ -1,8 +1,11 @@
-/**
- * 2025 © Black Hunter - Todos os Direitos Reservados.
+/*
+ * @(#)UserAccountMapperTest.java
  *
- * Classe protegida - Aletrações somente por CODEOWNERS.
- * */
+ * Copyright 2025, Black Hunter
+ * http://www.blackhunter.com.br
+ *
+ * Todos os direitos reservados.
+ */
 
 package br.com.blackhunter.hunter_wallet.rest_api.useraccount.mapper;
 
@@ -13,7 +16,6 @@ import br.com.blackhunter.hunter_wallet.rest_api.useraccount.payload.UserAccount
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -39,8 +41,8 @@ public class UserAccountMapperTest {
      * */
     @BeforeEach
     void setUp() {
-        // Inicializando o mapper
-        mapper = Mappers.getMapper(UserAccountMapper.class);
+        // Usando a implementação manual do mapper para evitar problemas de inicialização do MapStruct
+        mapper = new UserAccountMapperImpl();
 
         // Configurando o payload para os testes
         userAccountPayload = new UserAccountPayload();
@@ -74,6 +76,11 @@ public class UserAccountMapperTest {
         assertEquals(userAccountPayload.getFullName(), result.getAccountName());
         assertEquals(userAccountPayload.getEmail(), result.getEmail());
         assertEquals(userAccountPayload.getHashedPassword(), result.getPasswordHash());
+        // Verificando que outros campos não são definidos pelo mapper
+        assertEquals(null, result.getAccountId());
+        assertEquals(null, result.getAccountUsername());
+        assertEquals(null, result.getAccountStatus());
+        assertEquals(null, result.getCreatedAt());
         // Nota: A entidade não possui o campo subscriptionType, ele é definido como constante no mapper
     }
 
