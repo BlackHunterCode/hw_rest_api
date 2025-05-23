@@ -1,38 +1,59 @@
 package br.com.blackhunter.hunter_wallet.rest_api.useraccount.service.impl;
 
+import br.com.blackhunter.hunter_wallet.rest_api.core.util.MultipartFileUtil;
 import br.com.blackhunter.hunter_wallet.rest_api.useraccount.dto.UserProfileData;
 import br.com.blackhunter.hunter_wallet.rest_api.useraccount.entity.UserAccountEntity;
 import br.com.blackhunter.hunter_wallet.rest_api.useraccount.entity.UserProfileEntity;
+import br.com.blackhunter.hunter_wallet.rest_api.useraccount.mapper.UserProfileMapper;
 import br.com.blackhunter.hunter_wallet.rest_api.useraccount.payload.UserProfilePayload;
 import br.com.blackhunter.hunter_wallet.rest_api.useraccount.repository.UserProfileRepository;
 import br.com.blackhunter.hunter_wallet.rest_api.useraccount.service.UserProfileService;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.lang.NonNull;
 
-import java.util.Optional;
 import java.util.UUID;
 
 public class UserProfileServiceImpl implements UserProfileService {
-    private final UserProfileRepository profileRepository;
+    private final UserProfileRepository repository;
+    private final UserProfileMapper mapper;
 
     public UserProfileServiceImpl(
-            UserProfileRepository profileRepository
+            UserProfileRepository repository,
+            UserProfileMapper mapper
     ) {
-        this.profileRepository = profileRepository;
+        this.repository = repository;
+        this.mapper     = mapper;
     }
 
     @Override
-    public UserProfileData createProfile(UserAccountEntity userAccount, UserProfilePayload profilePayload) {
-        return null;
+    @NonNull
+    public UserProfileData createProfile(@NonNull UserAccountEntity userAccount, @NonNull UserProfilePayload payload) {
+        UserProfileEntity toSave = mapper.toEntity(payload);
+        if(payload.getProfilePictureFile() != null) {
+            toSave.setProfilePictureFile(MultipartFileUtil.validateAndGetMultipartFileBytes(
+                    payload.getProfilePictureFile()
+            ));
+        }
+        toSave.setUserAccount(userAccount);
+        UserProfileEntity profile = repository.save(toSave);
+        return mapper.toData(profile);
     }
 
     @Override
-    public UserProfileData updateProfile(UUID profileId, UserProfilePayload profilePayload) {
-        return null;
+    @NonNull
+    public UserProfileData updateProfile(@NonNull UUID profileId, @NonNull UserProfilePayload payload) {
+        UserProfileEntity profile = findByUserAccountId(profileId);
+        mapper.updateEntity(profile, payload);
+        if (payload.getProfilePictureFile() != null) {
+            profile.setProfilePictureFile(MultipartFileUtil.validateAndGetMultipartFileBytes(payload.getProfilePictureFile()));
+        }
+        return mapper.toData(repository.save(profile));
     }
 
     @Override
-    public UserProfileEntity findByUserAccountId(UUID userId) {
-        return profileRepository.findByAccountId(userId).orElseThrow(
+    @NonNull
+    public UserProfileEntity findByUserAccountId(@NonNull UUID userId) {
+        return repository.findByAccountId(userId).orElseThrow(
             () -> new EntityNotFoundException("The user profile provided does not exist.")
         );
     }

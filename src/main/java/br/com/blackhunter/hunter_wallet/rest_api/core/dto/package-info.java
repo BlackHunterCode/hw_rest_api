@@ -1,5 +1,13 @@
+/*
+ * @(#)package-info.java
+ *
+ * Copyright 2025, Black Hunter
+ * http://www.blackhunter.com.br
+ *
+ * Todos os direitos reservados.
+ */
+
 /**
- * 2025 © Black Hunter - Todos os Direitos Reservados.
  * <p>
  * Este pacote contém classes de objetos de transferência de dados (DTOs) compartilhados
  * entre os diferentes domínios da aplicação.

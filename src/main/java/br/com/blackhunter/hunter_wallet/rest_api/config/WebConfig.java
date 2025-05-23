@@ -1,6 +1,13 @@
-/**
- * 2025 © Black Hunter - Todos os Direitos Reservados.
+/*
+ * @(#)WebConfig.java
  *
+ * Copyright 2025, Black Hunter
+ * http://www.blackhunter.com.br
+ *
+ * Todos os direitos reservados.
+ */
+
+/**
  * Classe protegida - Alterações somente por CODEOWNERS.
  */
 

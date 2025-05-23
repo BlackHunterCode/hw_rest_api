@@ -1,5 +1,13 @@
+/*
+ * @(#)package-info.java
+ *
+ * Copyright 2025, Black Hunter
+ * http://www.blackhunter.com.br
+ *
+ * Todos os direitos reservados.
+ */
+
 /**
- * 2025 © Black Hunter - Todos os Direitos Reservados.
  * <p>Este pacote contém classes responsáveis pela validação de regras de negócio e consistência
  *  relacionadas à conta de usuário do sistema Hunter Wallet.</p>
  *

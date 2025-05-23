@@ -21,11 +21,15 @@ import org.mapstruct.factory.Mappers;
 public interface UserAccountMapper {
     UserAccountMapper INSTANCE = Mappers.getMapper(UserAccountMapper.class);
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "name", source = "fullName")
+    @Mapping(target = "accountId", ignore = true)
+    @Mapping(target = "accountName", source = "fullName")
     @Mapping(target = "email", source = "email")
-    @Mapping(target = "password", source = "passwordHash")
-    @Mapping(target = "subscriptionType", constant = "FREE") // Valor fixo AINDA
+    @Mapping(target = "passwordHash", source = "hashedPassword")
+    @Mapping(target = "accountUsername", source = "username")
+    @Mapping(
+            target = "accountStatus",
+            expression = "java(br.com.blackhunter.hunter_wallet.rest_api.useraccount.enums.UserAccountStatus.ACTIVE)"
+    )
     UserAccountEntity toEntity(UserAccountPayload reqPayload);
 
     @Mapping(target = "accountId", source = "accountId")

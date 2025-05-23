@@ -30,4 +30,6 @@ public class UserAccountPayload {
     private String email;
     @NotBlank(message = "The \"password\" field is mandatory.")
     private String hashedPassword;
+    @NotBlank(message = "The \"username\" field is mandatory.")
+    private String username;
 }

@@ -26,7 +26,6 @@ public class UserProfileEntity {
     private String lastName;
     private String phoneNumber;
     private LocalDate birthDate;
-    private String profilePictureUrl;
     @Lob
     private byte[] profilePictureFile;
 

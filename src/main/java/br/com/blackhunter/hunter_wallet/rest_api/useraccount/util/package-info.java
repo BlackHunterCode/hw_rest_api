@@ -1,5 +1,13 @@
+/*
+ * @(#)package-info.java
+ *
+ * Copyright 2025, Black Hunter
+ * http://www.blackhunter.com.br
+ *
+ * Todos os direitos reservados.
+ */
+
 /**
- * 2025 © Black Hunter - Todos os Direitos Reservados.
  * <p>
  * Este pacote contém classes utilitárias que fornecem funcionalidades auxiliares
  * reutilizáveis no contexto de contas de usuários.
