@@ -15,6 +15,7 @@ import br.com.blackhunter.hunter_wallet.rest_api.useraccount.repository.UserAcco
 import br.com.blackhunter.hunter_wallet.rest_api.useraccount.service.UserAccountService;
 import br.com.blackhunter.hunter_wallet.rest_api.useraccount.validation.UserAccountValidator;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -27,20 +28,24 @@ public class UserAccountServiceImpl implements UserAccountService {
     private final UserAccountValidator validator;
     private final UserAccountMapper mapper;
     private final UserAccountRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * Injeção de dependências:
      * @param validator Validador de situações complexas de contas de usuários
      * @param mapper Mapeador de classes de contas de usuários
      * @param repository Repositório de dados de contas de usuários
+     * @param passwordEncoder Codificador de senhas
      * */
     public UserAccountServiceImpl(
             UserAccountValidator validator,
             UserAccountMapper mapper,
-            UserAccountRepository repository) {
+            UserAccountRepository repository,
+            PasswordEncoder passwordEncoder){
         this.validator = validator;
         this.mapper = mapper;
         this.repository = repository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -56,7 +61,10 @@ public class UserAccountServiceImpl implements UserAccountService {
         entity.setCreatedAt(LocalDateTime.now());
         entity.setUpdatedAt(LocalDateTime.now());
         entity.setAccountStatus(UserAccountStatus.ACTIVE);
-        return mapper.toData(repository.saveAndFlush(entity));
+        // por enquanto nao existe validação para garantir que a senha ja vem criptografada
+        // ent ao, vamos criptografar a senha aqui fixa por enquanto
+        entity.setPasswordHash(passwordEncoder.encode(reqPayload.getHashedPassword()));
+        return mapper.toData(repository.save(entity));
     }
 
     @Override

@@ -35,4 +35,12 @@ public interface UserAccountRepository extends JpaRepository<UserAccountEntity, 
     boolean existsByEmail(@Param(value = "email") String email);
 
     Optional<UserAccountEntity> findByEmail(String email);
+    
+    /**
+     * @param email E-mail do usuário a ser excluído
+     * <p>Remove a conta de usuário com o e-mail especificado.</p>
+     * 
+     * @return Número de registros excluídos
+     * */
+    void deleteByEmail(String email);
 }
