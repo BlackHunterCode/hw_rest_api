@@ -16,12 +16,12 @@ public interface GoalMapper {
     GoalMapper INSTANCE = Mappers.getMapper(GoalMapper.class);
 
     @Mapping(target = "goalId", ignore = true)
-    @Mapping(target = "user", ignore = true)
+    @Mapping(target = "userAccount", ignore = true)
     @Mapping(target = "goalName", source = "goalName")
     @Mapping(target = "goalDescription", source = "goalDescription")
     @Mapping(target = "goalIcon", source = "goalIcon")
     @Mapping(target = "goalColor", source = "goalColor")
-    @Mapping(target = "dGoalTargetAmount", source = "goalTargetAmount", defaultValue = "0.0")
+    @Mapping(target = "DGoalTargetAmount", source = "goalTargetAmount", defaultValue = "0.0")
     @Mapping(target = "goalDate", source = "goalDate")
     GoalEntity toEntityEncrypted(GoalPayload payload);
 
@@ -30,7 +30,7 @@ public interface GoalMapper {
     @Mapping(target = "goalDescriptionEncrypted", source = "goalDescription")
     @Mapping(target = "goalIconEncrypted", source = "goalIcon")
     @Mapping(target = "goalColorEncrypted", source = "goalColor")
-    @Mapping(target = "dGoalTargetAmountEncrypted", source = "dGoalTargetAmount")
+    @Mapping(target = "DGoalTargetAmountEncrypted", source = "DGoalTargetAmount")
     @Mapping(target = "goalDate", source = "goalDate")
     GoalData toDataEncrypted(GoalEntity entity);
 }

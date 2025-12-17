@@ -8,6 +8,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface GoalRepository extends JpaRepository<GoalEntity, UUID> {
-    @Query("SELECT g FROM GoalEntity g WHERE g.user.accountId = :accountId")
+    @Query("SELECT g FROM GoalEntity g WHERE g.userAccount.accountId = :accountId")
     List<GoalEntity> findAllByUserAccountId(UUID accountId);
 }

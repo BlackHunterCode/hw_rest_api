@@ -7,6 +7,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface GoalService {
-    GoalData persistGoal(GoalPayload payload, UUID goalId);
+    GoalData persistGoal(GoalPayload payload, boolean update);
     List<GoalData> listAllUserGoals();
 }

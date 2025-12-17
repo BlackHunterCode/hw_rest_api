@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 /**
  * Classe de Payload para a entidade Goal.
@@ -18,6 +19,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GoalPayload {
+    // nulo quando for uma nova meta
+    private UUID goalId;
     @Encrypted
     @NotBlank(message = "the goal name field is mandatory.")
     private String goalName;

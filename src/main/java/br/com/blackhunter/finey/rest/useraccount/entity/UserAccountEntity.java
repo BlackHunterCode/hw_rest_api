@@ -10,23 +10,17 @@
 package br.com.blackhunter.finey.rest.useraccount.entity;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import br.com.blackhunter.finey.rest.finance.financial_commitments.entity.FinancialCommitmentEntity;
+import br.com.blackhunter.finey.rest.finance.goal.entity.GoalEntity;
 import br.com.blackhunter.finey.rest.finance.transaction.entity.TransactionEntity;
 import br.com.blackhunter.finey.rest.integrations.pluggy.entity.PluggyItemEntity;
+import br.com.blackhunter.finey.rest.scheduled_task.push_notification.notification_schedule.entity.NotificationScheduleEntity;
 import br.com.blackhunter.finey.rest.useraccount.enums.UserAccountStatus;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
 
@@ -65,13 +59,25 @@ public class UserAccountEntity {
     @ToString.Exclude
     private UserProfileEntity userProfile;
 
-    @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude
-    private Set<TransactionEntity> transactions;
+    private Set<TransactionEntity> transactions = new HashSet<>();
 
-    @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude
-    private Set<PluggyItemEntity> pluggyItems;
+    private Set<PluggyItemEntity> pluggyItems = new HashSet<>();
+
+    @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private Set<GoalEntity> goals = new HashSet<>();
+
+    @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private Set<FinancialCommitmentEntity> financialCommitments = new HashSet<>();
+
+    @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private Set<NotificationScheduleEntity> notificationSchedules = new HashSet<>();
 
     /**
      * Construtor padrão da classe.

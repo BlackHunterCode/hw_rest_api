@@ -38,18 +38,19 @@ public class GoalServiceImpl implements GoalService {
     }
 
     @Override
-    public GoalData persistGoal(@Validated GoalPayload payload, @Nullable UUID goalId) {
+    public GoalData persistGoal(@Validated GoalPayload payload, boolean update) {
         log.debug("\tregisterGoal - Entrada: payload = {}", payload);
         try {
             GoalEntity goalEntity = goalMapper.toEntityEncrypted(payload);
 
-            if(goalId != null) {
-                goalEntity.setGoalId(goalId);
+            if(update) {
+                if(payload.getGoalId() == null) throw new IllegalArgumentException("Goal ID must be provided for update operation");
+                goalEntity.setGoalId(payload.getGoalId());
                 goalEntity.setUpdatedAt(LocalDateTime.now());
             }
             else
             {
-                goalEntity.setUser(jwtUtil.getUserAccountFromToken());
+                goalEntity.setUserAccount(jwtUtil.getUserAccountFromToken());
                 goalEntity.prePersist();
             }
 

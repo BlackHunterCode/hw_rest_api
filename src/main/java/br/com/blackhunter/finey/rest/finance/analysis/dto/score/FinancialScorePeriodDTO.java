@@ -20,5 +20,7 @@ public class FinancialScorePeriodDTO {
     private String detailsEncrypted;
     @JsonProperty(value = "percentage")
     private String percentageEncrypted;
+    @JsonProperty(value = "daysOfControl")
+    private String daysOfControlEncrypted;
     private List<InsightDTO> insights;
 }

@@ -23,7 +23,7 @@ public class GoalEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_account_id", nullable = false, updatable = false)
-    private UserAccountEntity user;
+    private UserAccountEntity userAccount;
 
     @Column(name = "goal_name", length = 40, nullable = false)
     private String goalName;
@@ -34,7 +34,7 @@ public class GoalEntity {
     @Column(name = "goal_color", length = 10, nullable = false)
     private String goalColor;
     @Column(name = "d_goal_target_amount", nullable = false)
-    private String dGoalTargetAmount;
+    private String DGoalTargetAmount;
 
     @Column(name = "goal_date")
     private LocalDate goalDate;

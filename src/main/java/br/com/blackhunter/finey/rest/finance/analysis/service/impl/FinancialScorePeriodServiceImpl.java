@@ -1,6 +1,7 @@
 package br.com.blackhunter.finey.rest.finance.analysis.service.impl;
 
 import br.com.blackhunter.finey.rest.auth.util.CryptUtil;
+import br.com.blackhunter.finey.rest.auth.util.JwtUtil;
 import br.com.blackhunter.finey.rest.core.dto.TransactionPeriodDate;
 import br.com.blackhunter.finey.rest.core.util.DateTimeUtil;
 import br.com.blackhunter.finey.rest.core.util.Utils;
@@ -9,9 +10,13 @@ import br.com.blackhunter.finey.rest.finance.analysis.dto.insights.InsightDTO;
 import br.com.blackhunter.finey.rest.finance.analysis.service.FinancialScorePeriodService;
 import br.com.blackhunter.finey.rest.finance.analysis.dto.financial_summary.FinancialSummary;
 import br.com.blackhunter.finey.rest.finance.analysis.service.HomeScreenAnalysisService;
+import br.com.blackhunter.finey.rest.useraccount.entity.UserAccountEntity;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,14 +24,20 @@ import java.util.List;
  * Classe <code>FinancialScorePeriodServiceImpl</code> que implementa a interface <code>FinancialScorePeriodService</code>.
  * Essa classe é responsável por fornecer a implementação do serviço de cálculo do score financeiro para um período específico.
  * */
+@Service
 public class FinancialScorePeriodServiceImpl implements FinancialScorePeriodService {
     @Value("${hunter.secrets.pluggy.crypt-secret}")
     private String PLUGGY_CRYPT_SECRET;
 
     private final HomeScreenAnalysisService homeScreenAnalysisService;
+    private final JwtUtil jwtUtil;
 
-    public FinancialScorePeriodServiceImpl(HomeScreenAnalysisService homeScreenAnalysisService) {
+    public FinancialScorePeriodServiceImpl(
+            HomeScreenAnalysisService homeScreenAnalysisService,
+            JwtUtil jwtUtil
+    ) {
         this.homeScreenAnalysisService = homeScreenAnalysisService;
+        this.jwtUtil = jwtUtil;
     }
 
     @Override
@@ -39,13 +50,15 @@ public class FinancialScorePeriodServiceImpl implements FinancialScorePeriodServ
             Double score = calculateFinancialScore(financialSummary);
             Double percentage = calculatePercentage(periodDate, bankAccountIds, financialSummary);
             String details = getScoreDetails(score, percentage, periodDate);
+            String daysOfControl = getDaysOfControl();
             List<InsightDTO> insights = getInsights(financialSummary);
 
             return new FinancialScorePeriodDTO(
                     CryptUtil.encrypt(periodDate.getStartDate() + " - " + periodDate.getEndDate(), PLUGGY_CRYPT_SECRET),
                     CryptUtil.encrypt(String.valueOf(score), PLUGGY_CRYPT_SECRET),
-                    CryptUtil.encrypt(String.valueOf(percentage), PLUGGY_CRYPT_SECRET),
                     CryptUtil.encrypt(details, PLUGGY_CRYPT_SECRET),
+                    CryptUtil.encrypt(String.valueOf(percentage), PLUGGY_CRYPT_SECRET),
+                    daysOfControl,
                     insights
             );
         } catch(Exception e) {
@@ -179,5 +192,16 @@ public class FinancialScorePeriodServiceImpl implements FinancialScorePeriodServ
         }
 
         return insights;
+    }
+
+    private String getDaysOfControl() throws Exception {
+        UserAccountEntity user = jwtUtil.getUserAccountFromToken();
+        LocalDateTime now = LocalDateTime.now();
+        if (user.getCreatedAt() != null) {
+            long days = Duration.between(user.getCreatedAt(), now).toDays();
+            return CryptUtil.encrypt(String.valueOf(days), PLUGGY_CRYPT_SECRET);
+        } else {
+            return "0";
+        }
     }
 }

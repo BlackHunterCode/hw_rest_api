@@ -35,7 +35,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
         "br.com.blackhunter.finey.rest.core.trace.repository",
         "br.com.blackhunter.finey.rest.useraccount.repository",
         "br.com.blackhunter.finey.rest.finance.transaction.repository",
-        "br.com.blackhunter.finey.rest.integrations.pluggy.repository"
+        "br.com.blackhunter.finey.rest.integrations.pluggy.repository",
+        "br.com.blackhunter.finey.rest.finance.financial_commitments.repository",
+        "br.com.blackhunter.finey.rest.scheduled_task.push_notification.notification_schedule.repository",
+        "br.com.blackhunter.finey.rest.finance.goal.repository"
     },
     transactionManagerRef = "errorLoggingTransactionManager"
 )
@@ -44,7 +47,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
         "br.com.blackhunter.finey.rest.core.trace.entity",
         "br.com.blackhunter.finey.rest.useraccount.entity",
         "br.com.blackhunter.finey.rest.finance.transaction.entity",
-        "br.com.blackhunter.finey.rest.integrations.pluggy.entity"
+        "br.com.blackhunter.finey.rest.integrations.pluggy.entity",
+        "br.com.blackhunter.finey.rest.finance.financial_commitments.entity",
+        "br.com.blackhunter.finey.rest.scheduled_task.push_notification.notification_schedule.entity",
+        "br.com.blackhunter.finey.rest.finance.goal.entity"
     }
 )
 public class ErrorLoggingConfig {
