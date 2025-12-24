@@ -3,6 +3,7 @@ package br.com.blackhunter.finey.rest.finance.analysis.service;
 import br.com.blackhunter.finey.rest.auth.util.CryptUtil;
 import br.com.blackhunter.finey.rest.auth.util.JwtUtil;
 import br.com.blackhunter.finey.rest.core.dto.TransactionPeriodDate;
+import br.com.blackhunter.finey.rest.finance.analysis.calc.*;
 import br.com.blackhunter.finey.rest.finance.analysis.dto.budget.BudgetCategory;
 import br.com.blackhunter.finey.rest.finance.analysis.dto.budget.BudgetReality;
 import br.com.blackhunter.finey.rest.finance.analysis.dto.current_balance_projection.CurrentBalanceProjection;
@@ -16,18 +17,13 @@ import br.com.blackhunter.finey.rest.finance.analysis.dto.income.IncomeBreakdown
 import br.com.blackhunter.finey.rest.finance.analysis.dto.income.IncomeSource;
 import br.com.blackhunter.finey.rest.finance.analysis.dto.insights.Insights;
 import br.com.blackhunter.finey.rest.finance.analysis.dto.investments.SavingsInvestments;
-import br.com.blackhunter.finey.rest.finance.calc.service.FinancialSummaryCalcService;
-import br.com.blackhunter.finey.rest.finance.calc.service.ExpensesCategoriesCalcService;
+import br.com.blackhunter.finey.rest.finance.transaction.service.TransactionService;
 import br.com.blackhunter.finey.rest.integrations.financial_integrator.FinancialIntegrator;
 import br.com.blackhunter.finey.rest.integrations.financial_integrator.FinancialIntegratorManager;
 import br.com.blackhunter.finey.rest.integrations.financial_integrator.dto.FinancialInstitutionData;
 import br.com.blackhunter.finey.rest.integrations.pluggy.dto.PluggyAccountIds;
 import br.com.blackhunter.finey.rest.useraccount.entity.UserAccountEntity;
 import br.com.blackhunter.finey.rest.finance.transaction.enums.TransactionType;
-
-import br.com.blackhunter.finey.rest.finance.calc.service.BalanceProjectionCalcService;
-import br.com.blackhunter.finey.rest.finance.calc.service.IncomeBreakdownCalcService;
-import br.com.blackhunter.finey.rest.finance.calc.service.SavingsInvestmentsCalcService;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -41,7 +37,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-public class AnalysisService {
+public class HomeScreenAnalysisService {
     @Value("${hunter.secrets.pluggy.crypt-secret}")
     private String PLUGGY_CRYPT_SECRET;
 
@@ -52,16 +48,18 @@ public class AnalysisService {
     private final ExpensesCategoriesCalcService expensesCategoriesCalcService;
     private final IncomeBreakdownCalcService incomeBreakdownCalcService;
     private final SavingsInvestmentsCalcService savingsInvestmentsCalcService;
+    private final TransactionService transactionService;
 
     // Adicionar no construtor
-    public AnalysisService(
+    public HomeScreenAnalysisService(
             JwtUtil jwtUtil,
             FinancialIntegratorManager financialIntegratorManager,
             FinancialSummaryCalcService financialSummaryCalcService,
             BalanceProjectionCalcService balanceProjectionCalcService,
             ExpensesCategoriesCalcService expensesCategoriesCalcService,
             IncomeBreakdownCalcService incomeBreakdownCalcService,
-            SavingsInvestmentsCalcService savingsInvestmentsCalcService
+            SavingsInvestmentsCalcService savingsInvestmentsCalcService,
+            TransactionService transactionService
     ) {
         this.jwtUtil = jwtUtil;
         this.financialIntegratorManager = financialIntegratorManager;
@@ -70,6 +68,7 @@ public class AnalysisService {
         this.expensesCategoriesCalcService = expensesCategoriesCalcService;
         this.incomeBreakdownCalcService = incomeBreakdownCalcService;
         this.savingsInvestmentsCalcService = savingsInvestmentsCalcService;
+        this.transactionService = transactionService;
     }
     
     /**
@@ -191,11 +190,7 @@ public class AnalysisService {
                 .collect(Collectors.toList());
 
             // Calcular projeção usando o serviço especializado
-            return balanceProjectionCalcService.calculateBalanceProjectionEncrypted(
-                financialIntegratorManager,
-                filteredBanks,
-                bankAccountIds
-            );
+            return balanceProjectionCalcService.calculateBalanceProjectionEncrypted(filteredBanks, bankAccountIds);
             
         } catch (Exception e) {
             throw new RuntimeException("Error calculating balance projection: " + e.getMessage(), e);
@@ -239,7 +234,6 @@ public class AnalysisService {
     public ExpensesCategories getExpensesCategoriesEncrypted(List<String> bankAccountIds, TransactionPeriodDate periodDate) {
         try {
             return expensesCategoriesCalcService.calculateExpensesCategoriesEncrypted(
-                financialIntegratorManager,
                 bankAccountIds,
                 periodDate
             );
@@ -296,7 +290,6 @@ public class AnalysisService {
         try {
             // Utilizar o serviço de cálculo especializado para obter dados reais do Pluggy
             return incomeBreakdownCalcService.calculateIncomeBreakdownEncrypted(
-                financialIntegratorManager,
                 bankAccountIds,
                 periodDate
             );
@@ -646,27 +639,16 @@ public class AnalysisService {
         Map<String, BigDecimal> spentByCategory = new java.util.HashMap<>();
         
         try {
-            FinancialIntegrator financialIntegrator = financialIntegratorManager.getFinancialIntegrator();
-            
             // Processar transações de cada conta
             for (String accountId : bankAccountIds) {
-                String accountEntityId = CryptUtil.decrypt(accountId, PLUGGY_CRYPT_SECRET);
-                String originalPluggyAccountId = financialIntegrator
-                    .getOriginalFinancialAccountIdByTargetId(UUID.fromString(accountEntityId));
-                
-                List<br.com.blackhunter.finey.rest.finance.transaction.entity.TransactionEntity> transactions = 
-                    financialIntegrator.getAllTransactionsPeriodByTargetId(
-                        originalPluggyAccountId,
-                        periodDate.getStartDate(),
-                        periodDate.getEndDate()
-                    );
-                
+                List<br.com.blackhunter.finey.rest.finance.transaction.dto.TransactionData> transactions = transactionService.getAllTransactionsPeriodByAccountId(accountId, periodDate);
+
                 // Processar apenas transações de débito
-                for (br.com.blackhunter.finey.rest.finance.transaction.entity.TransactionEntity transaction : transactions) {
+                for (br.com.blackhunter.finey.rest.finance.transaction.dto.TransactionData transaction : transactions) {
                     if (transaction.getType() == TransactionType.DEBIT) {
                         BigDecimal amount = transaction.getAmount().abs();
                         String categoryName = categorizeTransactionForBudget(transaction);
-                        
+
                         spentByCategory.merge(categoryName, amount, BigDecimal::add);
                     }
                 }
@@ -683,7 +665,7 @@ public class AnalysisService {
     /**
      * Categoriza uma transação para fins de orçamento.
      */
-    private String categorizeTransactionForBudget(br.com.blackhunter.finey.rest.finance.transaction.entity.TransactionEntity transaction) {
+    private String categorizeTransactionForBudget(br.com.blackhunter.finey.rest.finance.transaction.dto.TransactionData transaction) {
         String description = transaction.getDescription().toLowerCase();
         
         if (transaction.getCategory() != null && !transaction.getCategory().trim().isEmpty()) {
@@ -797,8 +779,6 @@ public class AnalysisService {
         Map<String, BigDecimal> averages = new java.util.HashMap<>();
         
         try {
-            FinancialIntegrator financialIntegrator = financialIntegratorManager.getFinancialIntegrator();
-            
             // Definir período dos últimos 3 meses
             java.time.LocalDate now = java.time.LocalDate.now();
             java.time.LocalDate threeMonthsAgo = now.minusMonths(3);
@@ -812,18 +792,9 @@ public class AnalysisService {
             
             // Processar transações de cada conta
             for (String accountId : bankAccountIds) {
-                String accountEntityId = CryptUtil.decrypt(accountId, PLUGGY_CRYPT_SECRET);
-                String originalPluggyAccountId = financialIntegrator
-                    .getOriginalFinancialAccountIdByTargetId(UUID.fromString(accountEntityId));
-                
-                List<br.com.blackhunter.finey.rest.finance.transaction.entity.TransactionEntity> transactions = 
-                    financialIntegrator.getAllTransactionsPeriodByTargetId(
-                        originalPluggyAccountId,
-                        historicalPeriod.getStartDate(),
-                        historicalPeriod.getEndDate()
-                    );
-                
-                for (br.com.blackhunter.finey.rest.finance.transaction.entity.TransactionEntity transaction : transactions) {
+                List<br.com.blackhunter.finey.rest.finance.transaction.dto.TransactionData> transactions = transactionService.getAllTransactionsPeriodByAccountId(accountId, historicalPeriod);
+
+                for (br.com.blackhunter.finey.rest.finance.transaction.dto.TransactionData transaction : transactions) {
                     if (transaction.getType() == TransactionType.DEBIT) {
                         BigDecimal amount = transaction.getAmount().abs();
                         String categoryName = categorizeTransactionForBudget(transaction);
@@ -910,7 +881,6 @@ public class AnalysisService {
         try {
             // Utilizar o serviço de cálculo especializado para obter dados reais do Pluggy
             return savingsInvestmentsCalcService.calculateSavingsInvestmentsEncrypted(
-                financialIntegratorManager,
                 bankAccountIds,
                 periodDate
             );
@@ -919,7 +889,7 @@ public class AnalysisService {
             // Em caso de erro, tentar buscar dados reais com o novo método
             try {
                 return savingsInvestmentsCalcService.createRealSavingsInvestments(
-                    financialIntegratorManager, bankAccountIds, periodDate);
+                    bankAccountIds, periodDate);
             } catch (Exception fallbackException) {
                 // Fallback final - usar método simulado para compatibilidade
                 try {

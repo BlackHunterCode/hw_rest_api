@@ -9,7 +9,7 @@ import br.com.blackhunter.finey.rest.finance.analysis.dto.financial_summary.Fina
 import br.com.blackhunter.finey.rest.finance.analysis.dto.income.IncomeBreakdown;
 import br.com.blackhunter.finey.rest.finance.analysis.dto.insights.Insights;
 import br.com.blackhunter.finey.rest.finance.analysis.dto.investments.SavingsInvestments;
-import br.com.blackhunter.finey.rest.finance.analysis.service.AnalysisService;
+import br.com.blackhunter.finey.rest.finance.analysis.service.HomeScreenAnalysisService;
 import br.com.blackhunter.finey.rest.screens_mobile.dto.HomeScreenAnalysisData;
 
 import java.time.LocalDate;
@@ -19,22 +19,22 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class HomeScreenService {
-    private AnalysisService analysisService;
+    private HomeScreenAnalysisService homeScreenAnalysisService;
 
-    public HomeScreenService(AnalysisService analysisService) {
-        this.analysisService = analysisService;
+    public HomeScreenService(HomeScreenAnalysisService homeScreenAnalysisService) {
+        this.homeScreenAnalysisService = homeScreenAnalysisService;
     }
 
     public HomeScreenAnalysisData getHomeScreenAnalysisFromReferenceDate(List<String> bankAccountIds, LocalDate referenceDate, LocalDate startDate, LocalDate endDate) {
         TransactionPeriodDate periodDate = DateTimeUtil.getTransactionPeriodDate(referenceDate, startDate, endDate);
 
-        FinancialSummary financialSummary = analysisService.getFinancialSummaryAnalysisEncrypted(bankAccountIds, periodDate);
-        CurrentBalanceProjection currentBalanceProjection = analysisService.getCurrentBalanceProjectionEncrypted(bankAccountIds);
-        ExpensesCategories expenseCategories = analysisService.getExpensesCategoriesEncrypted(bankAccountIds, periodDate);
-        BudgetReality budgetReality = analysisService.getBudgetRealityEncrypted();
-        Insights aiInsights = analysisService.getInsightsEncrypted();
-        IncomeBreakdown incomeBreakdown = analysisService.getIncomeBreakdownEncrypted(bankAccountIds, periodDate);
-        SavingsInvestments savingsInvestments = analysisService.getSavingsInvestmentsEncrypted(bankAccountIds, periodDate);
+        FinancialSummary financialSummary = homeScreenAnalysisService.getFinancialSummaryAnalysisEncrypted(bankAccountIds, periodDate);
+        CurrentBalanceProjection currentBalanceProjection = homeScreenAnalysisService.getCurrentBalanceProjectionEncrypted(bankAccountIds);
+        ExpensesCategories expenseCategories = homeScreenAnalysisService.getExpensesCategoriesEncrypted(bankAccountIds, periodDate);
+        BudgetReality budgetReality = homeScreenAnalysisService.getBudgetRealityEncrypted();
+        Insights aiInsights = homeScreenAnalysisService.getInsightsEncrypted();
+        IncomeBreakdown incomeBreakdown = homeScreenAnalysisService.getIncomeBreakdownEncrypted(bankAccountIds, periodDate);
+        SavingsInvestments savingsInvestments = homeScreenAnalysisService.getSavingsInvestmentsEncrypted(bankAccountIds, periodDate);
 
         return new HomeScreenAnalysisData(
             periodDate.getStartDate() + " to " + periodDate.getEndDate(),

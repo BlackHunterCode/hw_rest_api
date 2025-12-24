@@ -20,6 +20,7 @@ public class TransactionController {
     }
 
     @PostMapping("/total-period")
+    @Deprecated
     public ResponseEntity<ApiResponse<TotalTransactionsPeriod>> getTotalTransactionsPeriod(@RequestBody TotalTransactionPeriodPayload payload) {
         TotalTransactionsPeriod totalTransactionsPeriod = transactionService.getTotalTransactionsPeriod(
                 payload.getBankAccountIds(), payload.getReferenceDateMonthYear(), payload.getStartDate(), payload.getEndDate()

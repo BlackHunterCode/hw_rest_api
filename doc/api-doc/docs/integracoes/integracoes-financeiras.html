@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Integrações Financeiras | Hunter Wallet API</title>
+    <title>Integrações Financeiras - Finey API</title>
     <link rel="stylesheet" href="../../css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -12,7 +12,7 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <h1>Hunter Wallet</h1>
+                <h1>Finey</h1>
                 <button id="theme-toggle" class="theme-toggle" aria-label="Alternar tema">
                     <i class="fas fa-moon"></i>
                 </button>
@@ -27,7 +27,7 @@
                             <i class="fas fa-chevron-down"></i>
                         </a>
                         <ul class="submenu">
-                            <li class="active"><a href="integracoes-financeiras.html">Integrações Financeiras</a></li>
+                            <li class="active"><a href="./integracoes-financeiras.html">Integrações Financeiras</a></li>
                         </ul>
                     </li>
                     <li class="nav-section">
@@ -37,6 +37,27 @@
                         </a>
                         <ul class="submenu">
                             <li><a href="../financeiro/transacoes.html">Transações</a></li>
+                            <li><a href="../financeiro/metas.html">Metas Financeiras</a></li>
+                            <!-- <li><a href="../financeiro/analise.html">Análise Financeira</a></li> -->
+                            <li><a href="../financeiro/compromissos.html">Compromissos Financeiros</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-section">
+                        <a href="#" class="section-header">
+                            <i class="fas fa-user"></i> Usuário
+                            <i class="fas fa-chevron-down"></i>
+                        </a>
+                        <ul class="submenu">
+                            <li><a href="../usuario/usuario.html">Informações do Usuário</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-section">
+                        <a href="#" class="section-header">
+                            <i class="fas fa-mobile-alt"></i> Telas Mobile
+                            <i class="fas fa-chevron-down"></i>
+                        </a>
+                        <ul class="submenu">
+                            <li><a href="../telas/home.html">Tela Inicial</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -48,14 +69,16 @@
             <div class="content-container">
                 <section class="section">
                     <h1>Integrações Financeiras</h1>
-                    <p class="lead">Conecte sua aplicação a plataformas financeiras externas para sincronizar transações e dados financeiros.</p>
-                </section>
-
-                <section class="section">
-                    <h2>Visão Geral</h2>
-                    <p>O módulo de Integrações Financeiras permite conectar o Hunter Wallet a diferentes plataformas financeiras para sincronização automática de transações, saldos e outros dados financeiros.</p>
-                    <p>Atualmente, a integração padrão é com a plataforma <b>Pluggy</b>.</p>
-                </section>
+                    <p class="lead">A Finey permite a integração com diversas instituições financeiras para sincronização de transações e saldos.</p>
+                    
+                    <h2>Conectar Integração</h2>
+                    <p>Inicia o processo de conexão com uma instituição financeira.</p>
+                    
+                    <div class="endpoint-card">
+                        <div class="endpoint-header">
+                            <span class="http-method post">POST</span>
+                            <span class="endpoint-path">/v1/integrations/financial-integrator/connect</span>
+                        </div>
 
                 <section class="section">
                     <h2>Endpoint</h2>

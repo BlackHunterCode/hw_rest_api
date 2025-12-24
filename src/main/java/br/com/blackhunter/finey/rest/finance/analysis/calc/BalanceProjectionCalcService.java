@@ -1,21 +1,20 @@
-package br.com.blackhunter.finey.rest.finance.calc.service;
+package br.com.blackhunter.finey.rest.finance.analysis.calc;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.UUID;
 
+import br.com.blackhunter.finey.rest.finance.transaction.dto.TransactionData;
+import br.com.blackhunter.finey.rest.finance.transaction.service.TransactionService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import br.com.blackhunter.finey.rest.auth.util.CryptUtil;
 import br.com.blackhunter.finey.rest.finance.analysis.dto.current_balance_projection.CurrentBalanceProjection;
-import br.com.blackhunter.finey.rest.finance.transaction.entity.TransactionEntity;
 import br.com.blackhunter.finey.rest.finance.transaction.enums.TransactionType;
-import br.com.blackhunter.finey.rest.integrations.financial_integrator.FinancialIntegrator;
-import br.com.blackhunter.finey.rest.integrations.financial_integrator.FinancialIntegratorManager;
 import br.com.blackhunter.finey.rest.integrations.financial_integrator.dto.FinancialInstitutionData;
 import br.com.blackhunter.finey.rest.integrations.pluggy.dto.PluggyAccountIds;
 
@@ -32,6 +31,9 @@ import br.com.blackhunter.finey.rest.integrations.pluggy.dto.PluggyAccountIds;
 public class BalanceProjectionCalcService {
     @Value("${hunter.secrets.pluggy.crypt-secret}")
     private String PLUGGY_CRYPT_SECRET;
+
+    @Autowired
+    private TransactionService transactionService;
 
     /**
      * Calcula a projeção completa de saldo baseada em análise histórica de 3 meses.
@@ -112,14 +114,12 @@ public class BalanceProjectionCalcService {
      *   <li>Aplica arredondamento para 2 casas decimais em valores monetários</li>
      * </ul>
      * 
-     * @param financialIntegratorManager gerenciador de integração financeira
      * @param connectedBanks lista de instituições financeiras conectadas
      * @param bankAccountIds lista de IDs das contas bancárias (criptografados)
      * @return projeção completa de saldo criptografada
      * @throws Exception se houver erro na descriptografia, busca de dados ou criptografia dos resultados
      */
     public CurrentBalanceProjection calculateBalanceProjectionEncrypted(
-            FinancialIntegratorManager financialIntegratorManager,
             List<FinancialInstitutionData> connectedBanks,
             List<String> bankAccountIds) throws Exception {
         
@@ -133,7 +133,7 @@ public class BalanceProjectionCalcService {
         
         // 3. Calcular médias históricas
         HistoricalAverages averages = calculateHistoricalAverages(
-            financialIntegratorManager, bankAccountIds, startDate, endDate, historicalDays);
+            bankAccountIds, startDate, endDate, historicalDays);
         
         // 4. Calcular dias restantes no mês atual
         int daysLeftInMonth = calculateDaysLeftInMonth();
@@ -233,7 +233,6 @@ public class BalanceProjectionCalcService {
      *   Média Diária: R$ 9.200 / 92 = R$ 100,00
      * </pre>
      * 
-     * @param financialIntegratorManager gerenciador de integração financeira
      * @param bankAccountIds lista de IDs das contas (criptografados)
      * @param startDate data de início do período histórico
      * @param endDate data de fim do período histórico
@@ -242,7 +241,6 @@ public class BalanceProjectionCalcService {
      * @throws Exception se houver erro na busca de transações
      */
     private HistoricalAverages calculateHistoricalAverages(
-            FinancialIntegratorManager financialIntegratorManager,
             List<String> bankAccountIds,
             LocalDate startDate,
             LocalDate endDate,
@@ -251,17 +249,10 @@ public class BalanceProjectionCalcService {
         BigDecimal totalIncome = BigDecimal.ZERO;
         BigDecimal totalExpenses = BigDecimal.ZERO;
         
-        FinancialIntegrator financialIntegrator = financialIntegratorManager.getFinancialIntegrator();
-        
         for (String accountId : bankAccountIds) {
-            String accountEntityId = CryptUtil.decrypt(accountId, PLUGGY_CRYPT_SECRET);
-            String originalPluggyAccountId = financialIntegrator
-                .getOriginalFinancialAccountIdByTargetId(UUID.fromString(accountEntityId));
-            
-            List<TransactionEntity> transactions = financialIntegrator
-                .getAllTransactionsPeriodByTargetId(originalPluggyAccountId, startDate, endDate);
-            
-            for (TransactionEntity transaction : transactions) {
+            List<TransactionData> transactions = transactionService.getAllTransactionsPeriodByAccountId(accountId, null, null, startDate, endDate);
+
+            for (TransactionData transaction : transactions) {
                 if (transaction.getType() == TransactionType.CREDIT) {
                     totalIncome = totalIncome.add(transaction.getAmount());
                 } else if (transaction.getType() == TransactionType.DEBIT) {

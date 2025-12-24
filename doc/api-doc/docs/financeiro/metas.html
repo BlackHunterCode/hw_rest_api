@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metas Financeiras - Finey API</title>
+    <link rel="stylesheet" href="../../css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="light-theme">
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>Finey</h1>
+                <button id="theme-toggle" class="theme-toggle" aria-label="Alternar tema">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="../../index.html"><i class="fas fa-home"></i> Início</a></li>
+                    <li><a href="../autenticacao.html"><i class="fas fa-key"></i> Autenticação</a></li>
+                    <li class="nav-section">
+                        <a href="#" class="section-header">
+                            <i class="fas fa-puzzle-piece"></i> Integrações
+                            <i class="fas fa-chevron-down"></i>
+                        </a>
+                        <ul class="submenu">
+                            <li><a href="../integracoes/integracoes-financeiras.html">Integrações Financeiras</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-section active">
+                        <a href="#" class="section-header">
+                            <i class="fas fa-wallet"></i> Financeiro
+                            <i class="fas fa-chevron-down"></i>
+                        </a>
+                        <ul class="submenu">
+                            <li><a href="./transacoes.html">Transações</a></li>
+                            <li class="active"><a href="./metas.html">Metas Financeiras</a></li>
+                            <!-- <li><a href="./analise.html">Análise Financeira</a></li> -->
+                            <li><a href="./compromissos.html">Compromissos Financeiros</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-section">
+                        <a href="#" class="section-header">
+                            <i class="fas fa-user"></i> Usuário
+                            <i class="fas fa-chevron-down"></i>
+                        </a>
+                        <ul class="submenu">
+                            <li><a href="../usuario/usuario.html">Informações do Usuário</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-section">
+                        <a href="#" class="section-header">
+                            <i class="fas fa-mobile-alt"></i> Telas Mobile
+                            <i class="fas fa-chevron-down"></i>
+                        </a>
+                        <ul class="submenu">
+                            <li><a href="../telas/home.html">Tela Inicial</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="content-container">
+                <section class="section">
+                    <h1>Metas Financeiras</h1>
+                    <p class="lead">A API Finey permite criar e gerenciar metas financeiras para o usuário.</p>
+                    
+                    <h2>Criar Meta Financeira</h2>
+                    <p>Cria uma nova meta financeira para o usuário.</p>
+                    
+                    <div class="endpoint-card">
+                        <div class="endpoint-header">
+                            <span class="http-method post">POST</span>
+                            <span class="endpoint-path">/v1/finance/goals/create</span>
+                        </div>
+                        <div class="endpoint-body">
+                            <h4>Corpo da Requisição</h4>
+                            <div class="code-block">
+                                <pre><code class="language-json">{
+    "goalName": "string[ENCRYPTED]",
+    "goalDescription": "string[ENCRYPTED]",
+    "goalIcon": "💸[ENCRYPTED]",
+    "goalColor": "string[ENCRYPTED]",
+    "goalTargetAmount": "string[ENCRYPTED-Double]",
+    "goalDate": "date"
+}</code></pre>
+                            </div>
+                            
+                            <h4>Cabeçalhos</h4>
+                            <table class="params-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nome</th>
+                                        <th>Tipo</th>
+                                        <th>Obrigatório</th>
+                                        <th>Descrição</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Authorization</td>
+                                        <td>String</td>
+                                        <td>Sim</td>
+                                        <td>Token JWT de autenticação (Bearer)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+                            <h4>Resposta de Sucesso (201 Created)</h4>
+                            <div class="code-block">
+                                <pre><code class="language-json">{
+    "status": "success",
+    "statusCode": 201,
+    "data": {
+        "goalId": "string",
+        "goalName": "string[ENCRYPTED]",
+        "goalDescription": "string[ENCRYPTED]",
+        "goalIcon": "string[ENCRYPTED]",
+        "goalColor": "string[ENCRYPTED]",
+        "dGoalTargetAmount": "string[ENCRYPTED-Double]",
+        "goalDate": 0
+    }
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h2>Atualizar Meta Financeira</h2>
+                    <p>Atualiza uma meta financeira existente.</p>
+                    
+                    <div class="endpoint-card">
+                        <div class="endpoint-header">
+                            <span class="http-method put">PUT</span>
+                            <span class="endpoint-path">/v1/finance/goals/update</span>
+                        </div>
+                        <div class="endpoint-body">
+                            <h4>Corpo da Requisição</h4>
+                            <div class="code-block">
+                                <pre><code class="language-json">{
+    "goalId": "string-uuid"                                
+    "goalName": "string[ENCRYPTED]",
+    "goalDescription": "string[ENCRYPTED]",
+    "goalIcon": "💸[ENCRYPTED]",
+    "goalColor": "string[ENCRYPTED]",
+    "goalTargetAmount": "string[ENCRYPTED-Double]",
+    "goalDate": "date"
+}</code></pre>
+                            </div>
+                            
+                            <h4>Cabeçalhos</h4>
+                            <table class="params-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nome</th>
+                                        <th>Tipo</th>
+                                        <th>Obrigatório</th>
+                                        <th>Descrição</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Authorization</td>
+                                        <td>String</td>
+                                        <td>Sim</td>
+                                        <td>Token JWT de autenticação (Bearer)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+                            <h4>Resposta de Sucesso (200 OK)</h4>
+                            <div class="code-block">
+                                <pre><code class="language-json">{
+    "status": "success",
+    "statusCode": 200,
+    "data": {
+        "goalId": "string",
+        "goalName": "string[ENCRYPTED]",
+        "goalDescription": "string[ENCRYPTED]",
+        "goalIcon": "string[ENCRYPTED]",
+        "goalColor": "string[ENCRYPTED]",
+        "dGoalTargetAmount": "string[ENCRYPTED-Double]",
+        "goalDate": 0
+    }
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h2>Listar Todas as Metas</h2>
+                    <p>Retorna todas as metas financeiras do usuário.</p>
+                    
+                    <div class="endpoint-card">
+                        <div class="endpoint-header">
+                            <span class="http-method get">GET</span>
+                            <span class="endpoint-path">/v1/finance/goals/list-all</span>
+                        </div>
+                        <div class="endpoint-body">
+                            <h4>Cabeçalhos</h4>
+                            <table class="params-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nome</th>
+                                        <th>Tipo</th>
+                                        <th>Obrigatório</th>
+                                        <th>Descrição</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Authorization</td>
+                                        <td>String</td>
+                                        <td>Sim</td>
+                                        <td>Token JWT de autenticação (Bearer)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+                            <h4>Resposta de Sucesso (200 OK)</h4>
+                            <div class="code-block">
+                                <pre><code class="language-json">{
+    "status": "success",
+    "statusCode": 200,
+    "data": [
+        {
+            "goalId": "string",
+            "goalName": "string[ENCRYPTED]",
+            "goalDescription": "string[ENCRYPTED]",
+            "goalIcon": "string[ENCRYPTED]",
+            "goalColor": "string[ENCRYPTED]",
+            "dGoalTargetAmount": "string[ENCRYPTED-Double]",
+            "goalDate": 0
+        }
+    ]
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2023 Finey. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Autenticação - Hunter Wallet API</title>
+    <title>Autenticação - Finey API</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -12,7 +12,7 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <h1>Hunter Wallet</h1>
+                <h1>Finey</h1>
                 <button id="theme-toggle" class="theme-toggle" aria-label="Alternar tema">
                     <i class="fas fa-moon"></i>
                 </button>
@@ -20,7 +20,7 @@
             <nav class="sidebar-nav">
                 <ul>
                     <li><a href="../index.html"><i class="fas fa-home"></i> Início</a></li>
-                    <li class="active"><a href="index.html"><i class="fas fa-key"></i> Autenticação</a></li>
+                    <li class="active"><a href="./autenticacao.html"><i class="fas fa-key"></i> Autenticação</a></li>
                     <li class="nav-section">
                         <a href="#" class="section-header">
                             <i class="fas fa-puzzle-piece"></i> Integrações
@@ -37,6 +37,27 @@
                         </a>
                         <ul class="submenu">
                             <li><a href="./financeiro/transacoes.html">Transações</a></li>
+                            <li><a href="./financeiro/metas.html">Metas Financeiras</a></li>
+                            <!-- <li><a href="./financeiro/analise.html">Análise Financeira</a></li> -->
+                            <li><a href="./financeiro/compromissos.html">Compromissos Financeiros</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-section">
+                        <a href="#" class="section-header">
+                            <i class="fas fa-user"></i> Usuário
+                            <i class="fas fa-chevron-down"></i>
+                        </a>
+                        <ul class="submenu">
+                            <li><a href="./usuario/usuario.html">Informações do Usuário</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-section">
+                        <a href="#" class="section-header">
+                            <i class="fas fa-mobile-alt"></i> Telas Mobile
+                            <i class="fas fa-chevron-down"></i>
+                        </a>
+                        <ul class="submenu">
+                            <li><a href="./telas/home.html">Tela Inicial</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -48,7 +69,7 @@
             <div class="content-container">
                 <section class="section">
                     <h1>Autenticação</h1>
-                    <p class="lead">A API da Hunter Wallet utiliza um mecanismo de autenticação challenge-response baseado em JWT e HMAC para garantir a segurança das requisições.</p>
+                    <p class="lead">A API da Finey utiliza um mecanismo de autenticação challenge-response baseado em JWT e HMAC para garantir a segurança das requisições.</p>
                     
                     <div class="alert alert-info">
                         <i class="fas fa-info-circle"></i>

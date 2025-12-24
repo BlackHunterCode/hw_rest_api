@@ -1,4 +1,4 @@
-package br.com.blackhunter.finey.rest.finance.calc.service;
+package br.com.blackhunter.finey.rest.finance.analysis.calc;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -7,9 +7,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 
+import br.com.blackhunter.finey.rest.finance.transaction.dto.TransactionData;
+import br.com.blackhunter.finey.rest.finance.transaction.service.TransactionService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -17,10 +19,7 @@ import br.com.blackhunter.finey.rest.auth.util.CryptUtil;
 import br.com.blackhunter.finey.rest.core.dto.TransactionPeriodDate;
 import br.com.blackhunter.finey.rest.finance.analysis.dto.income.IncomeBreakdown;
 import br.com.blackhunter.finey.rest.finance.analysis.dto.income.IncomeSource;
-import br.com.blackhunter.finey.rest.finance.transaction.entity.TransactionEntity;
 import br.com.blackhunter.finey.rest.finance.transaction.enums.TransactionType;
-import br.com.blackhunter.finey.rest.integrations.financial_integrator.FinancialIntegrator;
-import br.com.blackhunter.finey.rest.integrations.financial_integrator.FinancialIntegratorManager;
 
 /**
  * Serviço responsável por calcular e categorizar fontes de renda financeira.
@@ -47,7 +46,10 @@ public class IncomeBreakdownCalcService {
     
     @Value("${hunter.secrets.pluggy.crypt-secret}")
     private String PLUGGY_CRYPT_SECRET;
-    
+
+    @Autowired
+    private TransactionService transactionService;
+
     /**
      * Calcula o detalhamento de receitas por fonte para o período especificado.
      * 
@@ -129,14 +131,12 @@ public class IncomeBreakdownCalcService {
      *   <li><strong>Testar Criptografia:</strong> Descriptografar valores e comparar com dados originais</li>
      * </ol>
      * 
-     * @param financialIntegratorManager gerenciador de integração financeira
      * @param bankAccountIds lista de IDs das contas bancárias (criptografados)
      * @param periodDate período de análise com data de início e fim
      * @return detalhamento de receitas por fonte com todos os dados criptografados
      * @throws Exception se houver erro na descriptografia, busca de transações ou criptografia dos resultados
      */
     public IncomeBreakdown calculateIncomeBreakdownEncrypted(
-            FinancialIntegratorManager financialIntegratorManager,
             List<String> bankAccountIds,
             TransactionPeriodDate periodDate) throws Exception {
         
@@ -144,23 +144,12 @@ public class IncomeBreakdownCalcService {
         Map<String, IncomeSourceData> incomeByCategory = new HashMap<>();
         BigDecimal totalIncome = BigDecimal.ZERO;
         
-        FinancialIntegrator financialIntegrator = financialIntegratorManager.getFinancialIntegrator();
-        
         // Buscar transações de todas as contas
         for (String accountId : bankAccountIds) {
-            String accountEntityId = CryptUtil.decrypt(accountId, PLUGGY_CRYPT_SECRET);
-            String originalPluggyAccountId = financialIntegrator.getOriginalFinancialAccountIdByTargetId(
-                UUID.fromString(accountEntityId)
-            );
-            
-            List<TransactionEntity> transactions = financialIntegrator.getAllTransactionsPeriodByTargetId(
-                originalPluggyAccountId,
-                periodDate.getStartDate(),
-                periodDate.getEndDate()
-            );
+            List<TransactionData> transactions = transactionService.getAllTransactionsPeriodByAccountId(accountId, periodDate);
             
             // Processar apenas transações de crédito (receitas)
-            for (TransactionEntity transaction : transactions) {
+            for (TransactionData transaction : transactions) {
                 if (transaction.getType() == TransactionType.CREDIT) {
                     String category = categorizeIncomeTransaction(transaction);
                     String icon = getIconForCategory(category);
@@ -234,7 +223,7 @@ public class IncomeBreakdownCalcService {
      * @param transaction transação a ser categorizada
      * @return categoria da receita
      */
-    private String categorizeIncomeTransaction(TransactionEntity transaction) {
+    private String categorizeIncomeTransaction(TransactionData transaction) {
         String description = transaction.getDescription().toLowerCase();
         
         // Verificar se já tem categoria definida na transação
@@ -301,7 +290,7 @@ public class IncomeBreakdownCalcService {
      * @param category categoria da receita
      * @return true se for receita recorrente
      */
-    private boolean isRecurringIncome(TransactionEntity transaction, String category) {
+    private boolean isRecurringIncome(TransactionData transaction, String category) {
         // Categorias tipicamente recorrentes
         if (category.equals("Salário") || category.equals("Aluguel") || 
             category.equals("Investimentos")) {

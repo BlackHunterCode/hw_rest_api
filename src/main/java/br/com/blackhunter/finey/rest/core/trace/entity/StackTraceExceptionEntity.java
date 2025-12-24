@@ -11,7 +11,7 @@ import java.util.UUID;
 
 
 @Entity
-@Table(name = "hw_stack_trace_exceptions")
+@Table(name = "fn_stack_trace_exceptions")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

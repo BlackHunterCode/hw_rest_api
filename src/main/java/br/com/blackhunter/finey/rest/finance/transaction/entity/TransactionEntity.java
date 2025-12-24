@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "hw_transactions")
+@Table(name = "fn_transactions")
 @Data
 public class TransactionEntity {
     @Id
@@ -57,7 +57,7 @@ public class TransactionEntity {
 
     @Column(name = "provider_transaction_code")
     private String providerTransactionCode;
-    @Column(name = "provider_transaction_id")
+    @Column(name = "provider_transaction_id", unique = true)
     private String providerTransactionId;
 
     @Column(name = "provider_transaction_type", nullable = false, updatable = false)

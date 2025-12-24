@@ -16,7 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Entity
-@Table(name = "hw_pluggy_items")
+@Table(name = "fn_pluggy_items")
 @Data
 @AllArgsConstructor
 public class PluggyItemEntity {

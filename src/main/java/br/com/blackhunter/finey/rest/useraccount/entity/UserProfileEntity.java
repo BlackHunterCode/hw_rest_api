@@ -20,7 +20,7 @@ import java.util.UUID;
  * <p>Entidade de perfil de usuário.</p>
  * */
 @Entity
-@Table(name = "hw_userprofiles")
+@Table(name = "fn_userprofiles")
 @Data
 public class UserProfileEntity {
     @Id

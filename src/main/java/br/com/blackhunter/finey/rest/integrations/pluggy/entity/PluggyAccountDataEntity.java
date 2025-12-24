@@ -14,7 +14,7 @@ import java.util.UUID;
 
 
 @Entity
-@Table
+@Table(name = "fn_pluggy_account_data")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
